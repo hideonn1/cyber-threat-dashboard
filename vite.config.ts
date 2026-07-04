@@ -23,9 +23,10 @@ export default defineConfig({
         configure: (proxy) => {
           proxy.on("error", (err, _req, res) => {
             console.warn(`[Proxy Warning] ANCI API is unreachable: ${err.message}`);
-            if (res && typeof res.writeHead === "function" && !res.headersSent) {
-              res.writeHead(502, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "ANCI API proxy error", message: err.message }));
+            const response = res as import("http").ServerResponse;
+            if (response && typeof response.writeHead === "function" && !response.headersSent) {
+              response.writeHead(502, { "Content-Type": "application/json" });
+              response.end(JSON.stringify({ error: "ANCI API proxy error", message: err.message }));
             }
           });
         },
@@ -44,9 +45,10 @@ export default defineConfig({
         configure: (proxy) => {
           proxy.on("error", (err, _req, res) => {
             console.warn(`[Proxy Warning] CISA API is unreachable: ${err.message}`);
-            if (res && typeof res.writeHead === "function" && !res.headersSent) {
-              res.writeHead(502, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "CISA API proxy error", message: err.message }));
+            const response = res as import("http").ServerResponse;
+            if (response && typeof response.writeHead === "function" && !response.headersSent) {
+              response.writeHead(502, { "Content-Type": "application/json" });
+              response.end(JSON.stringify({ error: "CISA API proxy error", message: err.message }));
             }
           });
         },
@@ -64,9 +66,10 @@ export default defineConfig({
         configure: (proxy) => {
           proxy.on("error", (err, _req, res) => {
             console.warn(`[Proxy Warning] RSS Feed Converter is unreachable: ${err.message}`);
-            if (res && typeof res.writeHead === "function" && !res.headersSent) {
-              res.writeHead(502, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "RSS proxy error", message: err.message }));
+            const response = res as import("http").ServerResponse;
+            if (response && typeof response.writeHead === "function" && !response.headersSent) {
+              response.writeHead(502, { "Content-Type": "application/json" });
+              response.end(JSON.stringify({ error: "RSS proxy error", message: err.message }));
             }
           });
         },
@@ -82,9 +85,10 @@ export default defineConfig({
         configure: (proxy) => {
           proxy.on("error", (err, _req, res) => {
             console.warn(`[Proxy Warning] Google Translate is unreachable: ${err.message}`);
-            if (res && typeof res.writeHead === "function" && !res.headersSent) {
-              res.writeHead(502, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "Translate proxy error", message: err.message }));
+            const response = res as import("http").ServerResponse;
+            if (response && typeof response.writeHead === "function" && !response.headersSent) {
+              response.writeHead(502, { "Content-Type": "application/json" });
+              response.end(JSON.stringify({ error: "Translate proxy error", message: err.message }));
             }
           });
         },
