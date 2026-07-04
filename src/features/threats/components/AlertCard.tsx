@@ -140,7 +140,7 @@ export default function AlertCard({ alert }: AlertCardProps) {
         )}
 
         {alert.tags && alert.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5 pb-2">
             {alert.tags.map((tag) => (
               <TranslatedText
                 key={tag}
@@ -152,6 +152,33 @@ export default function AlertCard({ alert }: AlertCardProps) {
             ))}
           </div>
         )}
+
+        {/* Enlaces de Referencia y Seguimiento */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 pt-4 border-t border-cyber-border/40 text-xs font-mono">
+          <span className="text-cyber-muted uppercase text-[9px] tracking-widest font-semibold block w-full">
+            Seguimiento y Fuentes
+          </span>
+          <a
+            href={`https://www.csirt.gob.cl/alertas/${alert.code.toLowerCase()}/`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cyber-btn-ghost px-2 py-1 text-cyber-accent hover:bg-cyber-accent/5 hover:text-cyber-accent"
+          >
+            Ficha Oficial CSIRT →
+          </a>
+          {alert.related_links && alert.related_links.length > 0 && alert.related_links.map((link, idx) => (
+            <a
+              key={idx}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={link.name}
+              className="cyber-btn-ghost px-2 py-1 hover:text-white truncate max-w-[200px]"
+            >
+              Ref: {link.name}
+            </a>
+          ))}
+        </div>
       </div>
     </article>
   );
