@@ -33,9 +33,11 @@ function TacticalConsoleContent() {
         id={`panel-${activeTab}`}
         aria-labelledby={`tab-${activeTab}`}
       >
-        {activeTab === "cl_alerts" && <ThreatsContainer />}
-        {activeTab === "us_cisa_kev" && <CisaKevPanel />}
-        {activeTab === "global_intel" && <GlobalIntelPanel />}
+        <div key={activeTab} className="animate-fade-in">
+          {activeTab === "cl_alerts" && <ThreatsContainer />}
+          {activeTab === "us_cisa_kev" && <CisaKevPanel />}
+          {activeTab === "global_intel" && <GlobalIntelPanel />}
+        </div>
       </div>
     </div>
   );
