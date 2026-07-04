@@ -10,7 +10,7 @@ export default function AlertCard({ alert }: AlertCardProps) {
   const { t } = useLanguage();
 
   const getTlpMeta = (tlp: string) => {
-    const cleanTlp = tlp.replace("TLP:", "").trim();
+    const cleanTlp = tlp.replace(/^TLP:/i, "").trim().toUpperCase();
     switch (cleanTlp) {
       case "RED":
         return {

@@ -14,7 +14,17 @@ export default function ThreatsContainer() {
       const matchesSearch =
         alert.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         alert.code.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesTlp = selectedTlp === "ALL" || alert.tlp === selectedTlp;
+
+      const alertTlp = alert.tlp.replace(/^TLP:/i, "").trim().toUpperCase();
+      const filterTlp = selectedTlp.toUpperCase();
+      const isWhiteOrClearAlert = alertTlp === "WHITE" || alertTlp === "CLEAR";
+      const isWhiteOrClearFilter = filterTlp === "WHITE" || filterTlp === "CLEAR";
+
+      const matchesTlp =
+        selectedTlp === "ALL" ||
+        (isWhiteOrClearAlert && isWhiteOrClearFilter) ||
+        alertTlp === filterTlp;
+
       return matchesSearch && matchesTlp;
     });
   }, [alerts, searchTerm, selectedTlp]);
@@ -65,7 +75,7 @@ export default function ThreatsContainer() {
             <option value="RED">TLP:RED</option>
             <option value="AMBER">TLP:AMBER</option>
             <option value="GREEN">TLP:GREEN</option>
-            <option value="WHITE">TLP:WHITE</option>
+            <option value="CLEAR">TLP:CLEAR</option>
           </select>
         </div>
       </div>

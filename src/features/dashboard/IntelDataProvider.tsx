@@ -63,7 +63,25 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
     const fetchAnci = async () => {
       try {
         const data = await fetchJson<AnciApiResponse>(ANCI_ALERTS_URL);
-        setAlerts(data.items);
+        // Simular diferentes niveles de TLP según las etiquetas (tags) para la demostración académica
+        const mappedItems = data.items.map((item) => {
+          let simulatedTlp = item.tlp;
+          const tags = (item.tags || []).map((t) => t.toLowerCase());
+
+          if (tags.includes("malware") || tags.includes("ransomware") || tags.includes("botnet")) {
+            simulatedTlp = "TLP:RED";
+          } else if (tags.includes("phishing") || tags.includes("fraude")) {
+            simulatedTlp = "TLP:AMBER";
+          } else if (tags.includes("vulnerabilidad") || tags.includes("cve")) {
+            simulatedTlp = "TLP:GREEN";
+          }
+
+          return {
+            ...item,
+            tlp: simulatedTlp,
+          };
+        });
+        setAlerts(mappedItems);
         setSyncTimes((prev) => ({ ...prev, anci: new Date() }));
         setErrors((prev) => ({ ...prev, anci: null }));
       } catch (error) {
