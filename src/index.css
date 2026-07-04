@@ -142,7 +142,7 @@
   }
 
   .animate-fade-in {
-    animation: fadeInSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeInSlideUp 0.12s ease-out forwards;
     will-change: transform, opacity;
   }
 }
@@ -171,7 +171,7 @@
 @keyframes fadeInSlideUp {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(3px);
   }
   to {
     opacity: 1;
