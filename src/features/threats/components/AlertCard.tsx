@@ -6,11 +6,19 @@ interface AlertCardProps {
   alert: AnciAlert;
 }
 
+function cleanMitigationText(text: string): string {
+  if (!text) return "";
+  let formatted = text.replace(/(?:\b|\s|^|(?<=\w)\.)(\d+)\.\s*/g, "\n\n$1. ");
+  formatted = formatted.replace(/([a-záéíóúñ])([A-ZÁÉÍÓÚÑ][a-z])/g, "$1. $2");
+  formatted = formatted.replace(/([A-ZÁÉÍÓÚÑ]{2,})([A-ZÁÉÍÓÚÑ][a-z])/g, "$1. $2");
+  return formatted.trim();
+}
+
 export default function AlertCard({ alert }: AlertCardProps) {
   const { t } = useLanguage();
 
   const getTlpMeta = (tlp: string) => {
-    const cleanTlp = tlp.replace("TLP:", "").trim();
+    const cleanTlp = tlp.replace(/^TLP:/i, "").trim().toUpperCase();
     switch (cleanTlp) {
       case "RED":
         return {
@@ -84,7 +92,7 @@ export default function AlertCard({ alert }: AlertCardProps) {
           </span>
           {alert.mitigation && alert.mitigation.trim() !== "" ? (
             <TranslatedText
-              text={alert.mitigation}
+              text={cleanMitigationText(alert.mitigation)}
               sourceLang="es"
               className="text-sm text-cyber-text/80 leading-relaxed whitespace-pre-line block"
               as="p"
