@@ -32,9 +32,9 @@ El código fuente está estructurado bajo una arquitectura modular orientada a c
 - **src/i18n/**: Motor de traducción local, provisto a través de React Context, con soporte para llaves tipadas de traducción.
 - **src/lib/**: Funciones de utilidad general, incluyendo la función optimizada de petición HTTP `fetchJson`.
 
-```markdown
 <details>
-    <summary><b>Ver estructura completa del proyecto</b></summary>
+  <summary><b>Ver estructura completa del proyecto</b></summary>
+
 ```text
 cyber-threat-dashboard
 ├── README.md
@@ -96,6 +96,7 @@ cyber-threat-dashboard
 ├── tsconfig.node.json
 └── vite.config.ts
 ```
+
 </details>
 
 ## Configuración de Proxy de Desarrollo
