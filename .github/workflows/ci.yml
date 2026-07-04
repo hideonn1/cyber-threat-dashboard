@@ -1,0 +1,36 @@
+name: Seguridad frontend y CI/CD
+
+on:
+  push:
+    branches: [ main, master, developer ]
+  pull_request:
+    branches: [ main, master, developer ]
+
+jobs:
+  audit-and-lint:
+    name: Security Auditing & Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar entorno de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-cache: 'npm'
+
+      - name: 3. Instalar dependencias limpias
+        run: npm ci
+
+      - name: 4. Auditoria de seguridad (npm audit)
+        run: npm audit --audit-level=high
+
+      - name: 5. Verificacion de tipos (TypeScript)
+        run: npm run tsc
+
+      - name: 6. Análisis estático de calidad (Linter)
+        run: npm run lint
+
+      - name: 7. Prueba de compilación de producción (Vite Build)
+        run: npm run build

@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-cyber-bg: #060608;
+  --color-cyber-surface: #0c0c12;
+  --color-cyber-elevated: #12121a;
+  --color-cyber-border: #1e1e2a;
+  --color-cyber-muted: #52525b;
+  --color-cyber-text: #d4d4d8;
+  --color-cyber-accent: #22d3ee;
+  --color-cyber-accent-dim: #0891b2;
+  --color-cyber-violet: #818cf8;
+  --color-cyber-amber: #fbbf24;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cyber-bg text-cyber-text font-sans antialiased;
+    background-image:
+      linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  ::selection {
+    background: rgba(34, 211, 238, 0.25);
+    color: #fff;
+  }
+}
+
+@layer components {
+  .cyber-shell {
+    @apply relative min-h-screen flex flex-col;
+  }
+
+  .cyber-shell::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 80% 50% at 50% -20%,
+      rgba(34, 211, 238, 0.08),
+      transparent 60%
+    );
+    z-index: 0;
+  }
+
+  .cyber-panel {
+    @apply relative bg-cyber-surface/80 backdrop-blur-md border border-cyber-border rounded-sm;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+      0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .cyber-panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    border-top: 1px solid rgba(34, 211, 238, 0.4);
+    border-left: 1px solid rgba(34, 211, 238, 0.4);
+    pointer-events: none;
+  }
+
+  .cyber-panel-accent-violet::before {
+    border-color: rgba(129, 140, 248, 0.45);
+  }
+
+  .cyber-panel-accent-amber::before {
+    border-color: rgba(251, 191, 36, 0.45);
+  }
+
+  .cyber-input {
+    @apply w-full bg-cyber-bg/80 border border-cyber-border rounded-sm px-3 py-2.5 text-sm text-cyber-text placeholder:text-cyber-muted transition-colors;
+    @apply focus:outline-none focus:border-cyber-accent/50 focus:ring-1 focus:ring-cyber-accent/20;
+  }
+
+  .cyber-label {
+    @apply block text-[11px] font-medium tracking-widest uppercase text-cyber-muted mb-2 font-mono;
+  }
+
+  .cyber-btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-xs font-semibold tracking-wide uppercase rounded-sm transition-all;
+    @apply bg-cyber-accent/10 text-cyber-accent border border-cyber-accent/30;
+    @apply hover:bg-cyber-accent/20 hover:border-cyber-accent/50 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)];
+  }
+
+  .cyber-btn-ghost {
+    @apply inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-sm transition-all;
+    @apply text-cyber-muted border border-transparent;
+    @apply hover:text-cyber-accent hover:bg-cyber-accent/5 hover:border-cyber-border;
+  }
+
+  .cyber-nav-link {
+    @apply px-3 py-2 text-xs font-medium tracking-wide text-cyber-muted rounded-sm transition-all;
+    @apply hover:text-cyber-accent hover:bg-cyber-accent/5;
+  }
+
+  .section-title {
+    @apply text-xl md:text-2xl font-semibold text-white tracking-tight;
+  }
+
+  .section-subtitle {
+    @apply text-sm text-cyber-muted mt-1.5 max-w-2xl leading-relaxed;
+  }
+
+  .section-divider {
+    @apply h-px w-full bg-gradient-to-r from-cyber-accent/40 via-cyber-border to-transparent;
+  }
+
+  .status-dot {
+    @apply w-1.5 h-1.5 rounded-full bg-cyber-accent;
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+    animation: pulse-glow 2.5s ease-in-out infinite;
+  }
+
+  .badge-mono {
+    @apply inline-flex items-center px-2 py-0.5 text-[10px] font-mono font-medium tracking-wider uppercase rounded-sm;
+  }
+
+  .loading-bar {
+    @apply h-px w-full overflow-hidden bg-cyber-border;
+  }
+
+  .loading-bar::after {
+    content: "";
+    display: block;
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, var(--color-cyber-accent), transparent);
+    animation: scan 1.8s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 4px rgba(34, 211, 238, 0.3);
+  }
+}
+
+@keyframes scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
