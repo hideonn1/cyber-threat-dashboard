@@ -12,6 +12,11 @@ export interface IoC {
   comment: string | null;
 }
 
+export interface RelatedLink {
+  name: string;
+  url: string;
+}
+
 export interface AnciAlert {
   code: string;
   title: string;
@@ -26,6 +31,7 @@ export interface AnciAlert {
   mitigation: string | null;
   vulnerabilities: Vulnerability[];
   iocs: IoC[];
+  related_links?: RelatedLink[];
 }
 
 export interface AnciApiResponse {
