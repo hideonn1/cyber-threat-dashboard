@@ -63,17 +63,72 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
     const fetchAnci = async () => {
       try {
         const data = await fetchJson<AnciApiResponse>(ANCI_ALERTS_URL);
-        // Simular diferentes niveles de TLP según las etiquetas (tags) para la demostración académica
+        // Simular diferentes niveles de TLP según título, etiquetas, descripción y mitigación para demostración académica
         const mappedItems = data.items.map((item) => {
-          let simulatedTlp = item.tlp;
-          const tags = (item.tags || []).map((t) => t.toLowerCase());
+          let simulatedTlp: string;
+          const textToSearch = [
+            item.title,
+            item.incident_type,
+            item.general_description,
+            item.specific_description,
+            item.mitigation || "",
+            ...(item.tags || []),
+          ].join(" ").toLowerCase();
 
-          if (tags.includes("malware") || tags.includes("ransomware") || tags.includes("botnet")) {
+          const isCriticalVulnerability =
+            textToSearch.includes("vulnerabilidad") &&
+            (textToSearch.includes("crítica") ||
+             textToSearch.includes("critica") ||
+             textToSearch.includes("crítico") ||
+             textToSearch.includes("critico"));
+
+          const isOivOrCriticalInfra =
+            textToSearch.includes("oiv") ||
+            textToSearch.includes("operador de importancia vital") ||
+            textToSearch.includes("operadores de importancia vital") ||
+            textToSearch.includes("infraestructura crítica") ||
+            textToSearch.includes("infraestructura critica") ||
+            textToSearch.includes("ley 21.663") ||
+            textToSearch.includes("ley 21663");
+
+          const isHighSeverityAttack =
+            textToSearch.includes("malware") ||
+            textToSearch.includes("ransomware") ||
+            textToSearch.includes("botnet") ||
+            textToSearch.includes("abuso") ||
+            textToSearch.includes("investigación") ||
+            textToSearch.includes("compromiso");
+
+          if (isCriticalVulnerability || isOivOrCriticalInfra || isHighSeverityAttack) {
             simulatedTlp = "TLP:RED";
-          } else if (tags.includes("phishing") || tags.includes("fraude")) {
+          } else if (
+            textToSearch.includes("phishing") ||
+            textToSearch.includes("fraude") ||
+            textToSearch.includes("suplantación") ||
+            textToSearch.includes("suplantacion") ||
+            textToSearch.includes("advertencia")
+          ) {
             simulatedTlp = "TLP:AMBER";
-          } else if (tags.includes("vulnerabilidad") || tags.includes("cve")) {
+          } else if (
+            textToSearch.includes("vulnerabilidad") ||
+            textToSearch.includes("cve") ||
+            textToSearch.includes("actualización") ||
+            textToSearch.includes("actualizacion") ||
+            textToSearch.includes("parche")
+          ) {
             simulatedTlp = "TLP:GREEN";
+          } else {
+            // Distribución determinista de respaldo basada en el código de la alerta
+            const lastChar = item.code.slice(-1);
+            if (["0", "3", "6"].includes(lastChar)) {
+              simulatedTlp = "TLP:GREEN";
+            } else if (["1", "4", "7"].includes(lastChar)) {
+              simulatedTlp = "TLP:AMBER";
+            } else if (["2", "5", "8"].includes(lastChar)) {
+              simulatedTlp = "TLP:RED";
+            } else {
+              simulatedTlp = "TLP:CLEAR";
+            }
           }
 
           return {
