@@ -135,6 +135,7 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
 
   const [hasMoreAnci, setHasMoreAnci] = useState(true);
   const [isFetchingMoreAnci, setIsFetchingMoreAnci] = useState(false);
+  const [isUsingMockAnci, setIsUsingMockAnci] = useState(false);
   // Use ref for page to avoid stale closure in fetchMoreAnci
   const anciPageRef = useRef(1);
 
@@ -157,24 +158,9 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
           const mockData = await fetchJson<AnciApiResponse>('/mock/anci-alerts.json', controller.signal);
           const mappedItems = mapAnciItems(mockData.items);
           
-          const mockWarningAlert: AnciAlert = {
-            code: "ANCI-MOCK-001",
-            title: "Modo de Respaldo: Datos Estáticos (07 Jul 2026)",
-            category: "Sistema",
-            tags: ["Mock", "Respaldo"],
-            alert_class: "Advertencia",
-            incident_type: "Bloqueo de Firewall",
-            tlp: "AMBER",
-            general_description: "La API de ANCI ha bloqueado la conexión (probablemente por protección Cloudflare al estar desplegado en Vercel). Se están mostrando datos reales capturados el 07 de Julio de 2026 para propósitos de demostración.",
-            specific_description: "Error de conexión o bloqueo WAF al proxy de Vercel.",
-            date: new Date().toISOString(),
-            mitigation: "Si estás en producción (Vercel), este mensaje es esperado. Para ver datos en vivo, ejecuta el proyecto localmente.",
-            vulnerabilities: [],
-            iocs: [],
-          };
-          
-          setAlerts([mockWarningAlert, ...mappedItems]);
+          setAlerts(mappedItems);
           setHasMoreAnci(false);
+          setIsUsingMockAnci(true);
           setSyncTimes((prev) => ({ ...prev, anci: new Date() }));
           setErrors((prev) => ({ ...prev, anci: null }));
         } catch (mockError) {
@@ -290,7 +276,8 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
       syncTimes,
       fetchMoreAnci,
       hasMoreAnci,
-      isFetchingMoreAnci
+      isFetchingMoreAnci,
+      isUsingMockAnci
     }),
     [
       alerts,
@@ -302,7 +289,8 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
       syncTimes,
       fetchMoreAnci,
       hasMoreAnci,
-      isFetchingMoreAnci
+      isFetchingMoreAnci,
+      isUsingMockAnci
     ],
   );
 
