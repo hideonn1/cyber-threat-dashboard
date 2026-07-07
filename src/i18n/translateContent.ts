@@ -36,7 +36,7 @@ interface QueueItem {
   from: ContentLang;
   to: Locale;
   resolve: (value: string) => void;
-  reject: (reason?: any) => void;
+  reject: (reason?: unknown) => void;
 }
 
 let translationQueue: QueueItem[] = [];
