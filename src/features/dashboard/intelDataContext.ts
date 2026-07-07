@@ -28,6 +28,7 @@ export interface IntelDataContextValue {
   fetchMoreAnci: () => Promise<void>;
   hasMoreAnci: boolean;
   isFetchingMoreAnci: boolean;
+  isUsingMockAnci: boolean;
 }
 
 export const IntelDataContext = createContext<IntelDataContextValue | null>(

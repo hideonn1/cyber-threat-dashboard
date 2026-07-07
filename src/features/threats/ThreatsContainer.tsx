@@ -12,6 +12,7 @@ export default function ThreatsContainer() {
     fetchMoreAnci,
     hasMoreAnci,
     isFetchingMoreAnci,
+    isUsingMockAnci,
   } = useIntelData();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTlp, setSelectedTlp] = useState("ALL");
@@ -73,8 +74,18 @@ export default function ThreatsContainer() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <h2 className="text-lg font-semibold text-white">{t("threats.title")}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold text-white">{t("threats.title")}</h2>
+          {isUsingMockAnci && (
+            <span 
+              className="text-xs font-mono text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-sm border border-amber-400/20"
+              title="Por bloqueo en Vercel, se muestran datos de prueba capturados para la demo."
+            >
+              MODO RESPALDO (07 JUL 2026)
+            </span>
+          )}
+        </div>
         <span className="badge-mono bg-cyber-accent/10 text-cyber-accent border border-cyber-accent/20">
           {filteredAlerts.length} {t("threats.records")}
         </span>
