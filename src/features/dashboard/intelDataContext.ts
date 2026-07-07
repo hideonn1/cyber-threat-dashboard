@@ -25,6 +25,9 @@ export interface IntelDataContextValue {
     news: string | null;
   };
   syncTimes: SyncTimes;
+  fetchMoreAnci: () => Promise<void>;
+  hasMoreAnci: boolean;
+  isFetchingMoreAnci: boolean;
 }
 
 export const IntelDataContext = createContext<IntelDataContextValue | null>(

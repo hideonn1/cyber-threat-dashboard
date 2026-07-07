@@ -1,7 +1,7 @@
 import type { Locale } from "./types";
 
 const es = {
-  "nav.brand": "ANCI Threat Intel",
+  "nav.brand": "Threat Intelligence",
   "nav.subtitle": "CSIRT · Panel operativo",
   "nav.linkActive": "Enlace activo",
 
@@ -39,6 +39,14 @@ const es = {
   "alert.mitigation": "Mitigación",
   "alert.noMitigation": "Sin medidas de mitigación reportadas.",
   "alert.cveAssociated": "CVE asociados",
+  "alert.iocsTitle": "Indicadores de Compromiso (IoC)",
+  "alert.sourcesTitle": "Seguimiento y Fuentes",
+  "alert.downloadPdf": "↓ Descargar PDF",
+  "alert.generatingPdf": "Generando...",
+  "alert.officialFile": "Ficha Oficial CSIRT →",
+  "alert.officialSource": "Fuente Oficial:",
+  "alert.ref": "Ref",
+  "alert.date": "Fecha:",
 
   "cisa.module": "Módulo 02",
   "cisa.title": "Catálogo CISA KEV",
@@ -74,7 +82,7 @@ const es = {
 } as const;
 
 const en: Record<keyof typeof es, string> = {
-  "nav.brand": "ANCI Threat Intel",
+  "nav.brand": "Threat Intelligence",
   "nav.subtitle": "CSIRT · Operations panel",
   "nav.linkActive": "Link active",
 
@@ -112,6 +120,14 @@ const en: Record<keyof typeof es, string> = {
   "alert.mitigation": "Mitigation",
   "alert.noMitigation": "No mitigation measures reported.",
   "alert.cveAssociated": "Associated CVEs",
+  "alert.iocsTitle": "Indicators of Compromise (IoC)",
+  "alert.sourcesTitle": "Tracking & Sources",
+  "alert.downloadPdf": "↓ Download PDF",
+  "alert.generatingPdf": "Generating...",
+  "alert.officialFile": "Official CSIRT File →",
+  "alert.officialSource": "Official Source:",
+  "alert.ref": "Ref",
+  "alert.date": "Date:",
 
   "cisa.module": "Module 02",
   "cisa.title": "CISA KEV Catalog",

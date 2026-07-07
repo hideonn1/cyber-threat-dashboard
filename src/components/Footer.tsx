@@ -9,9 +9,10 @@ const DATA_SOURCES = [
   { label: "The Hacker News", url: "https://thehackernews.com" },
 ];
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 export default function Footer() {
   const { t } = useLanguage();
-  const year = new Date().getFullYear();
 
   return (
     <footer className="relative z-10 border-t border-cyber-border mt-auto">
@@ -66,7 +67,7 @@ export default function Footer() {
 
         <div className="mt-10 pt-6 border-t border-cyber-border flex flex-col sm:flex-row justify-between gap-2 text-xs text-cyber-muted font-mono">
           <span>
-            © {year} {t("footer.copyright")}
+            © {CURRENT_YEAR} {t("footer.copyright")}
           </span>
           <span>{t("footer.version")}</span>
         </div>

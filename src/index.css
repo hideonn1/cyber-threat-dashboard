@@ -51,6 +51,7 @@
       transparent 60%
     );
     z-index: 0;
+    will-change: transform;
   }
 
   .cyber-panel {
@@ -58,6 +59,7 @@
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.02) inset,
       0 4px 24px rgba(0, 0, 0, 0.4);
+    will-change: transform;
   }
 
   .cyber-panel::before {
@@ -176,5 +178,17 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot,
+  .loading-bar::after,
+  .animate-fade-in {
+    animation: none !important;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
   }
 }

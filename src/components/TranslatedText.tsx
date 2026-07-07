@@ -1,4 +1,4 @@
-import { useEffect, useState, type ElementType } from "react";
+import { memo, useEffect, useState, type ElementType } from "react";
 import { useLanguage } from "@/i18n/useLanguage";
 import { translateText } from "@/i18n/translateContent";
 import type { ContentLang } from "@/i18n/types";
@@ -10,7 +10,7 @@ interface TranslatedTextProps {
   as?: ElementType;
 }
 
-export default function TranslatedText({
+export default memo(function TranslatedText({
   text,
   sourceLang,
   className = "",
@@ -58,4 +58,4 @@ export default function TranslatedText({
       {display}
     </Tag>
   );
-}
+});

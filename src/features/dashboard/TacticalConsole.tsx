@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, startTransition } from "react";
 import { useLanguage } from "@/i18n/useLanguage";
 import { IntelDataProvider } from "./IntelDataProvider";
 import AnalystMetricsPanel from "./AnalystMetricsPanel";
@@ -12,12 +12,15 @@ function TacticalConsoleContent() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<TacticalTab>("cl_alerts");
 
+  const handleTabChange = (tab: TacticalTab) => {
+    startTransition(() => {
+      setActiveTab(tab);
+    });
+  };
+
   return (
     <div className="space-y-6">
       <header className="space-y-4">
-        <p className="text-[11px] font-mono font-medium tracking-[0.2em] uppercase text-cyber-accent/80">
-          {t("app.systemVersion")}
-        </p>
         <h1 className="section-title">{t("app.title")}</h1>
         <p className="section-subtitle">{t("app.subtitle")}</p>
         <div className="section-divider max-w-md" />
@@ -25,7 +28,7 @@ function TacticalConsoleContent() {
 
       <AnalystMetricsPanel />
 
-      <TacticalTabs active={activeTab} onChange={setActiveTab} />
+      <TacticalTabs active={activeTab} onChange={handleTabChange} />
 
       <div
         className="cyber-panel p-4 md:p-6 min-h-[480px]"
