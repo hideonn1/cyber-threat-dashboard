@@ -13,11 +13,13 @@ const CARD_META = [
     id: "critical",
     accent: "text-red-400 border-red-500/25 bg-red-500/5",
     glow: "shadow-[0_0_12px_rgba(248,113,113,0.08)]",
+    mono: false,
   },
   {
     id: "phishing",
     accent: "text-cyber-amber border-cyber-amber/25 bg-cyber-amber/5",
     glow: "shadow-[0_0_12px_rgba(251,191,36,0.08)]",
+    mono: false,
   },
   {
     id: "sync",
