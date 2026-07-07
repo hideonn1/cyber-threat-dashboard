@@ -151,13 +151,41 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
         setErrors((prev) => ({ ...prev, anci: null }));
       } catch (error) {
         if (controller.signal.aborted) return;
-        console.warn("ANCI fetch failed, loading offline fallback.", error);
-        setAlerts([createOfflineAlert()]);
-        setHasMoreAnci(false);
-        setErrors((prev) => ({
-          ...prev,
-          anci: error instanceof Error ? error.message : "ANCI fetch failed",
-        }));
+        console.warn("ANCI fetch failed, attempting to load mock data...", error);
+
+        try {
+          const mockData = await fetchJson<AnciApiResponse>('/mock/anci-alerts.json', controller.signal);
+          const mappedItems = mapAnciItems(mockData.items);
+          
+          const mockWarningAlert: AnciAlert = {
+            code: "ANCI-MOCK-001",
+            title: "Modo de Respaldo: Datos Estáticos (07 Jul 2026)",
+            category: "Sistema",
+            tags: ["Mock", "Respaldo"],
+            alert_class: "Advertencia",
+            incident_type: "Bloqueo de Firewall",
+            tlp: "AMBER",
+            general_description: "La API de ANCI ha bloqueado la conexión (probablemente por protección Cloudflare al estar desplegado en Vercel). Se están mostrando datos reales capturados el 07 de Julio de 2026 para propósitos de demostración.",
+            specific_description: "Error de conexión o bloqueo WAF al proxy de Vercel.",
+            date: new Date().toISOString(),
+            mitigation: "Si estás en producción (Vercel), este mensaje es esperado. Para ver datos en vivo, ejecuta el proyecto localmente.",
+            vulnerabilities: [],
+            iocs: [],
+          };
+          
+          setAlerts([mockWarningAlert, ...mappedItems]);
+          setHasMoreAnci(false);
+          setSyncTimes((prev) => ({ ...prev, anci: new Date() }));
+          setErrors((prev) => ({ ...prev, anci: null }));
+        } catch (mockError) {
+          console.warn("Mock data also failed to load", mockError);
+          setAlerts([createOfflineAlert()]);
+          setHasMoreAnci(false);
+          setErrors((prev) => ({
+            ...prev,
+            anci: error instanceof Error ? error.message : "ANCI fetch failed",
+          }));
+        }
       } finally {
         if (!controller.signal.aborted) {
           setLoading((prev) => ({ ...prev, anci: false }));

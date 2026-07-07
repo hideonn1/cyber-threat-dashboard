@@ -17,7 +17,7 @@ export async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T
     const contentType = response.headers.get("content-type") ?? "";
     if (!contentType.includes("application/json")) {
       throw new Error(
-        "Response is not valid JSON. Check the proxy in vite.config.ts.",
+        `Response is not valid JSON for URL: ${url}. Check the proxy in vite.config.ts.`,
       );
     }
 
