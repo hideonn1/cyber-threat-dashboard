@@ -1,13 +1,21 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useLanguage } from "@/i18n/useLanguage";
 import { useIntelData } from "@/features/dashboard/useIntelData";
 import AlertCard from "./components/AlertCard";
 
 export default function ThreatsContainer() {
   const { t } = useLanguage();
-  const { alerts, loading, errors } = useIntelData();
+  const {
+    alerts,
+    loading,
+    errors,
+    fetchMoreAnci,
+    hasMoreAnci,
+    isFetchingMoreAnci,
+  } = useIntelData();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTlp, setSelectedTlp] = useState("ALL");
+  const [visibleCount, setVisibleCount] = useState(9);
 
   const filteredAlerts = useMemo(() => {
     return alerts.filter((alert) => {
@@ -18,7 +26,8 @@ export default function ThreatsContainer() {
       const alertTlp = alert.tlp.replace(/^TLP:/i, "").trim().toUpperCase();
       const filterTlp = selectedTlp.toUpperCase();
       const isWhiteOrClearAlert = alertTlp === "WHITE" || alertTlp === "CLEAR";
-      const isWhiteOrClearFilter = filterTlp === "WHITE" || filterTlp === "CLEAR";
+      const isWhiteOrClearFilter =
+        filterTlp === "WHITE" || filterTlp === "CLEAR";
 
       const matchesTlp =
         selectedTlp === "ALL" ||
@@ -29,7 +38,29 @@ export default function ThreatsContainer() {
     });
   }, [alerts, searchTerm, selectedTlp]);
 
-  if (loading.anci) {
+  const visibleAlerts = useMemo(
+    () => filteredAlerts.slice(0, visibleCount),
+    [filteredAlerts, visibleCount],
+  );
+
+  const handleLoadMore = useCallback(async () => {
+    if (visibleCount + 9 > alerts.length && hasMoreAnci) {
+      await fetchMoreAnci();
+    }
+    setVisibleCount((prev) => prev + 9);
+  }, [visibleCount, alerts.length, hasMoreAnci, fetchMoreAnci]);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
+    [],
+  );
+
+  const handleTlpChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => setSelectedTlp(e.target.value),
+    [],
+  );
+
+  if (loading.anci && alerts.length === 0) {
     return (
       <div className="space-y-3">
         <p className="text-sm font-mono text-cyber-muted">
@@ -55,21 +86,23 @@ export default function ThreatsContainer() {
 
       <div className="flex flex-col md:flex-row gap-4 pb-2 border-b border-cyber-border">
         <div className="flex-1">
-          <label className="cyber-label">{t("threats.searchLabel")}</label>
+          <label htmlFor="threats-search" className="cyber-label">{t("threats.searchLabel")}</label>
           <input
+            id="threats-search"
             type="text"
             className="cyber-input font-mono"
             placeholder={t("threats.searchPlaceholder")}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
         <div className="w-full md:w-52">
-          <label className="cyber-label">{t("threats.tlpLabel")}</label>
+          <label htmlFor="threats-tlp" className="cyber-label">{t("threats.tlpLabel")}</label>
           <select
+            id="threats-tlp"
             className="cyber-input font-mono cursor-pointer"
             value={selectedTlp}
-            onChange={(e) => setSelectedTlp(e.target.value)}
+            onChange={handleTlpChange}
           >
             <option value="ALL">{t("threats.tlpAll")}</option>
             <option value="RED">TLP:RED</option>
@@ -80,9 +113,9 @@ export default function ThreatsContainer() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 max-h-[560px] overflow-y-auto pr-1">
-        {filteredAlerts.length > 0 ? (
-          filteredAlerts.map((alert) => (
+      <div className="space-y-4">
+        {visibleAlerts.length > 0 ? (
+          visibleAlerts.map((alert) => (
             <AlertCard key={alert.code} alert={alert} />
           ))
         ) : (
@@ -93,6 +126,18 @@ export default function ThreatsContainer() {
           </div>
         )}
       </div>
+
+      {(visibleCount < filteredAlerts.length || hasMoreAnci) && (
+        <div className="flex justify-center pt-4">
+          <button
+            onClick={handleLoadMore}
+            disabled={isFetchingMoreAnci}
+            className="cyber-btn w-full md:w-auto px-12 py-3"
+          >
+            {isFetchingMoreAnci ? "Cargando..." : "Ver más alertas ↓"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
