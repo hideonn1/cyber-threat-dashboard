@@ -1,0 +1,24 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://anci.gob.cl/api/:path*"
+    },
+    {
+      "source": "/global-threats/:path*",
+      "destination": "https://www.cisa.gov/sites/default/files/feeds/:path*"
+    },
+    {
+      "source": "/rss2-json/:path*",
+      "destination": "https://api.rss2json.com/:path*"
+    },
+    {
+      "source": "/gtx/:path*",
+      "destination": "https://translate.googleapis.com/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
