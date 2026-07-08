@@ -158,7 +158,7 @@ export default function ThreatsContainer() {
             disabled={isFetchingMoreAnci}
             className="cyber-btn w-full md:w-auto px-12 py-3"
           >
-            {isFetchingMoreAnci ? "Cargando..." : "Ver más alertas ↓"}
+            {isFetchingMoreAnci ? t("threats.loading") : t("threats.seeMoreAlerts")}
           </button>
         </div>
       )}

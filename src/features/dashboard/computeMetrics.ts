@@ -30,12 +30,11 @@ export function isPhishingOrFraude(alert: AnciAlert): boolean {
 
 export function computeCriticalCount(
   alerts: AnciAlert[],
-  cisaVulnerabilities: CisaVulnerability[],
+  _cisaVulnerabilities?: CisaVulnerability[],
 ): number {
-  const anciCritical = alerts
+  return alerts
     .filter((a) => !isOfflineFallback(a))
     .filter(isAnciCritical).length;
-  return anciCritical + cisaVulnerabilities.length;
 }
 
 export function computePhishingRatio(alerts: AnciAlert[]): number {

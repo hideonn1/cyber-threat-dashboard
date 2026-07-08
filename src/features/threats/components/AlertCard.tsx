@@ -55,30 +55,31 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
   const handleDownloadPdf = async () => {
     if (!cardRef.current || isGenerating) return;
     setIsGenerating(true);
+
+    const el = cardRef.current;
+    const pdfOnly = el.querySelectorAll<HTMLElement>('.pdf-only');
+    const webOnly = el.querySelectorAll<HTMLElement>('.web-only');
+    const originalBorder = el.style.border;
+    const originalBorderRadius = el.style.borderRadius;
+    const originalMargin = el.style.margin;
+
     try {
       const { toJpeg } = await import("html-to-image");
       const { jsPDF } = await import("jspdf");
-      
-      const pdfOnly = cardRef.current.querySelectorAll<HTMLElement>('.pdf-only');
-      const webOnly = cardRef.current.querySelectorAll<HTMLElement>('.web-only');
-      
-      const originalBorder = cardRef.current.style.border;
-      const originalBorderRadius = cardRef.current.style.borderRadius;
-      const originalMargin = cardRef.current.style.margin;
-      
-      cardRef.current.style.border = 'none';
-      cardRef.current.style.borderRadius = '0';
-      cardRef.current.style.margin = '0';
-      
-      pdfOnly.forEach(el => {
-        el.classList.remove('hidden');
-        el.style.display = 'block';
+
+      el.style.border = 'none';
+      el.style.borderRadius = '0';
+      el.style.margin = '0';
+
+      pdfOnly.forEach(node => {
+        node.classList.remove('hidden');
+        node.style.display = 'block';
       });
-      webOnly.forEach(el => {
-        el.style.display = 'none';
+      webOnly.forEach(node => {
+        node.style.display = 'none';
       });
 
-      const imgData = await toJpeg(cardRef.current, {
+      const imgData = await toJpeg(el, {
         quality: 1.0,
         backgroundColor: '#090a0f',
         pixelRatio: 2,
@@ -88,35 +89,32 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
           transform: 'none'
         }
       });
-      
-      const pdfWidth = cardRef.current.offsetWidth;
-      const pdfHeight = cardRef.current.offsetHeight;
-      
+
+      const pdfWidth = el.offsetWidth;
+      const pdfHeight = el.offsetHeight;
+
       const pdf = new jsPDF({
         orientation: pdfHeight > pdfWidth ? "p" : "l",
         unit: "px",
         format: [pdfWidth, pdfHeight]
       });
-      
-      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-      
-      pdfOnly.forEach(el => {
-        el.classList.add('hidden');
-        el.style.display = '';
-      });
-      webOnly.forEach(el => {
-        el.style.display = '';
-      });
-      
-      cardRef.current.style.border = originalBorder;
-      cardRef.current.style.borderRadius = originalBorderRadius;
-      cardRef.current.style.margin = originalMargin;
 
+      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
       pdf.save(`Alerta_ANCI_${alert.code || "Generica"}.pdf`);
     } catch (err) {
       console.error("Error generating PDF:", err);
       window.alert(`Error al generar el PDF: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
+      pdfOnly.forEach(node => {
+        node.classList.add('hidden');
+        node.style.display = '';
+      });
+      webOnly.forEach(node => {
+        node.style.display = '';
+      });
+      el.style.border = originalBorder;
+      el.style.borderRadius = originalBorderRadius;
+      el.style.margin = originalMargin;
       setIsGenerating(false);
     }
   };
