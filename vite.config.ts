@@ -13,7 +13,6 @@ export default defineConfig({
 
   server: {
     proxy: {
-      // 1. FUENTE NACIONAL: Alertas de la ANCI chilena
       "/api": {
         target: "https://anci.gob.cl",
         changeOrigin: true,
@@ -32,14 +31,12 @@ export default defineConfig({
         },
       },
 
-      // 2. FUENTE GLOBAL CISA: Catálogo de vulnerabilidades explotadas (Corregido el https://)
       "/global-threats": {
         target: "https://www.cisa.gov",
         changeOrigin: true,
         secure: true,
         timeout: 5000,
         proxyTimeout: 5000,
-        // Reescribe la ruta para que busque directamente en la estructura interna de la CISA
         rewrite: (path) =>
           path.replace(/^\/global-threats/, "/sites/default/files/feeds"),
         configure: (proxy) => {
@@ -54,18 +51,16 @@ export default defineConfig({
         },
       },
 
-      // 3. FUENTE NOTICIAS RSS: Convertidor internacional (Corregido rss2json y dominio base)
-      "/rss2-json": {
-        target: "https://api.rss2json.com",
+      "/raw-rss": {
+        target: "https://feeds.feedburner.com",
         changeOrigin: true,
         secure: true,
         timeout: 5000,
         proxyTimeout: 5000,
-        // Limpiamos el prefijo para adjuntar limpiamente el /v1/api.json en el fetch
-        rewrite: (path) => path.replace(/^\/rss2-json/, ""),
+        rewrite: (path) => path.replace(/^\/raw-rss/, ""),
         configure: (proxy) => {
           proxy.on("error", (err, _req, res) => {
-            console.warn(`[Proxy Warning] RSS Feed Converter is unreachable: ${err.message}`);
+            console.warn(`[Proxy Warning] RSS Feed is unreachable: ${err.message}`);
             const response = res as import("http").ServerResponse;
             if (response && typeof response.writeHead === "function" && !response.headersSent) {
               response.writeHead(502, { "Content-Type": "application/json" });
@@ -74,7 +69,6 @@ export default defineConfig({
           });
         },
       },
-      // 4. TRADUCCIÓN: Google Translate (cliente gtx vía proxy)
       "/gtx": {
         target: "https://translate.googleapis.com",
         changeOrigin: true,

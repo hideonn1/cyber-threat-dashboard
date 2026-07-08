@@ -74,18 +74,31 @@ export default function ThreatsContainer() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-white">{t("threats.title")}</h2>
-          {isUsingMockAnci && (
+      <div className="flex flex-wrap items-center justify-between gap-4 relative">
+        <h2 className="text-lg font-semibold text-white">{t("threats.title")}</h2>
+        
+        {isUsingMockAnci && (
+          <div className="absolute left-1/2 -translate-x-1/2 hidden sm:block">
             <span 
-              className="text-xs font-mono text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-sm border border-amber-400/20"
-              title="Por bloqueo en Vercel, se muestran datos de prueba capturados para la demo."
+              className="text-xs font-mono text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-sm border border-emerald-400/20 whitespace-nowrap"
+              title={t("threats.mockBadgeTitle")}
             >
-              MODO RESPALDO (07 JUL 2026)
+              {t("threats.mockBadge")}
             </span>
-          )}
-        </div>
+          </div>
+        )}
+        
+        {isUsingMockAnci && (
+          <div className="w-full text-center sm:hidden order-last mt-2">
+             <span 
+              className="text-xs font-mono text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-sm border border-emerald-400/20"
+              title={t("threats.mockBadgeTitle")}
+            >
+              {t("threats.mockBadge")}
+            </span>
+          </div>
+        )}
+
         <span className="badge-mono bg-cyber-accent/10 text-cyber-accent border border-cyber-accent/20">
           {filteredAlerts.length} {t("threats.records")}
         </span>

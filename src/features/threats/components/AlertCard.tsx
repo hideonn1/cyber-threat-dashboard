@@ -59,11 +59,9 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
       const { toJpeg } = await import("html-to-image");
       const { jsPDF } = await import("jspdf");
       
-      // Preparamos el DOM temporalmente para el PDF
       const pdfOnly = cardRef.current.querySelectorAll<HTMLElement>('.pdf-only');
       const webOnly = cardRef.current.querySelectorAll<HTMLElement>('.web-only');
       
-      // Añadimos una clase temporal al contenedor para remover estilos de hover/bordes que puedan salir mal
       const originalBorder = cardRef.current.style.border;
       const originalBorderRadius = cardRef.current.style.borderRadius;
       const originalMargin = cardRef.current.style.margin;
@@ -80,11 +78,10 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
         el.style.display = 'none';
       });
 
-      // Capturamos TODO el componente como una sola imagen de alta resolución
       const imgData = await toJpeg(cardRef.current, {
         quality: 1.0,
-        backgroundColor: '#090a0f', // Fondo oscuro del theme
-        pixelRatio: 2, // Mejor nitidez
+        backgroundColor: '#090a0f',
+        pixelRatio: 2,
         style: {
           margin: '0',
           boxShadow: 'none',
@@ -95,17 +92,14 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
       const pdfWidth = cardRef.current.offsetWidth;
       const pdfHeight = cardRef.current.offsetHeight;
       
-      // Configurar PDF con tamaño dinámico exacto al componente
       const pdf = new jsPDF({
         orientation: pdfHeight > pdfWidth ? "p" : "l",
         unit: "px",
         format: [pdfWidth, pdfHeight]
       });
       
-      // Añadimos la imagen ocupando exactamente el 100% de la página
       pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
       
-      // Restaurar el DOM a su estado original para la web
       pdfOnly.forEach(el => {
         el.classList.add('hidden');
         el.style.display = '';
@@ -217,7 +211,6 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
           </div>
         )}
 
-        {/* IOCs Rendering */}
         {alert.iocs && alert.iocs.length > 0 && (
           <div className="space-y-3">
             <span className="pdf-section block text-[10px] font-mono font-medium tracking-widest uppercase text-cyber-violet/90 pl-1">
@@ -256,9 +249,6 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
           </div>
         )}
 
-        {/* ========================================= */}
-        {/* ENLACES Y FUENTES (UI ORIGINAL DE LA WEB) */}
-        {/* ========================================= */}
         <div className="web-only flex flex-wrap items-center gap-x-3 gap-y-2 pt-4 border-t border-cyber-border/40 text-xs font-mono">
           <span className="text-cyber-muted uppercase text-[9px] tracking-widest font-semibold block w-full">
             {t("alert.sourcesTitle")}
@@ -292,9 +282,6 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
           ))}
         </div>
 
-        {/* ========================================= */}
-        {/* FOOTER EXCLUSIVO PARA EL PDF              */}
-        {/* ========================================= */}
         <div className="pdf-only hidden pdf-section pt-5 border-t border-cyber-border/40 space-y-3">
           <div className="text-[10px] font-mono text-cyber-muted space-y-1.5">
             <p className="flex flex-col sm:flex-row sm:gap-2">

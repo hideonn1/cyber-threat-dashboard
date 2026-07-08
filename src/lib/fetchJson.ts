@@ -2,7 +2,6 @@ export async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T
   const controller = signal ? undefined : new AbortController();
   const effectiveSignal = signal ?? controller?.signal;
 
-  // 30s timeout if no external signal provided
   const timeoutId = controller
     ? setTimeout(() => controller.abort(), 30_000)
     : undefined;

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { fetchJson } from "@/lib/fetchJson";
 import type { AnciAlert, AnciApiResponse } from "@/features/threats/types";
 import type { CisaApiResponse } from "@/features/global/types";
-import type { RssNewsApiResponse } from "@/features/news/types";
 import {
   IntelDataContext,
   type SyncTimes,
@@ -12,9 +11,6 @@ import {
 const ANCI_ALERTS_URL = "/api/v1/alerts/";
 const CISA_KEV_URL =
   "/global-threats/known_exploited_vulnerabilities.json";
-const RSS_FEED_URL =
-  "/rss2-json/v1/api.json?rss_url=https://feeds.feedburner.com/TheHackersNews";
-const ARTICLE_COUNT = 12;
 
 function createOfflineAlert(): AnciAlert {
   return {
@@ -36,7 +32,6 @@ function createOfflineAlert(): AnciAlert {
   };
 }
 
-/** Pure function — moved outside component to avoid re-creation on every render */
 function mapAnciItems(items: AnciAlert[]): AnciAlert[] {
   return items.map((item) => {
     let simulatedTlp: string;
@@ -136,10 +131,8 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
   const [hasMoreAnci, setHasMoreAnci] = useState(true);
   const [isFetchingMoreAnci, setIsFetchingMoreAnci] = useState(false);
   const [isUsingMockAnci, setIsUsingMockAnci] = useState(false);
-  // Use ref for page to avoid stale closure in fetchMoreAnci
   const anciPageRef = useRef(1);
 
-  // ANCI fetch with AbortController cleanup
   useEffect(() => {
     const controller = new AbortController();
     const fetchAnci = async () => {
@@ -182,7 +175,6 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
     return () => controller.abort();
   }, []);
 
-  // fetchMoreAnci with useCallback + ref to avoid stale closure
   const fetchMoreAnci = useCallback(async () => {
     if (isFetchingMoreAnci || !hasMoreAnci) return;
     setIsFetchingMoreAnci(true);
@@ -191,13 +183,11 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
       const data = await fetchJson<AnciApiResponse>(`${ANCI_ALERTS_URL}?page=${nextPage}`);
       const mappedItems = mapAnciItems(data.items);
 
-      // Deduplicate by alert code
       setAlerts((prev) => {
         const existingCodes = new Set(prev.map(a => a.code));
         const deduped = mappedItems.filter(a => !existingCodes.has(a.code));
         return [...prev, ...deduped];
       });
-      // Compute hasMore OUTSIDE the setState updater
       setHasMoreAnci(data.count > (alerts.length + mappedItems.length));
       anciPageRef.current = nextPage;
     } catch (error) {
@@ -207,7 +197,6 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
     }
   }, [isFetchingMoreAnci, hasMoreAnci, alerts.length]);
 
-  // CISA fetch with AbortController cleanup
   useEffect(() => {
     const controller = new AbortController();
     const fetchCisa = async () => {
@@ -237,16 +226,31 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
     return () => controller.abort();
   }, []);
 
-  // News fetch with AbortController cleanup
   useEffect(() => {
     const controller = new AbortController();
     const fetchNews = async () => {
       try {
-        const data = await fetchJson<RssNewsApiResponse>(RSS_FEED_URL, controller.signal);
-        if (data.status !== "ok") {
-          throw new Error("RSS converter returned an error status.");
+        const response = await fetch("/raw-rss/TheHackersNews", { signal: controller.signal });
+        if (!response.ok) {
+          throw new Error("Failed to fetch RSS feed");
         }
-        setNewsArticles(data.items.slice(0, ARTICLE_COUNT));
+        const text = await response.text();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(text, "text/xml");
+        const items = Array.from(xml.querySelectorAll("item"));
+        
+        const parsedItems = items.map(item => ({
+          title: item.querySelector("title")?.textContent || "",
+          pubDate: item.querySelector("pubDate")?.textContent || "",
+          link: item.querySelector("link")?.textContent || "",
+          guid: item.querySelector("guid")?.textContent || "",
+          author: item.querySelector("creator")?.textContent || item.querySelector("author")?.textContent || "",
+          thumbnail: item.querySelector("enclosure")?.getAttribute("url") || "",
+          description: item.querySelector("description")?.textContent || "",
+          content: item.querySelector("encoded")?.textContent || "",
+        }));
+
+        setNewsArticles(parsedItems);
         setSyncTimes((prev) => ({ ...prev, news: new Date() }));
         setErrors((prev) => ({ ...prev, news: null }));
       } catch (error) {

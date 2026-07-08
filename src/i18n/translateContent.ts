@@ -79,7 +79,6 @@ async function processQueue(items: QueueItem[]) {
 
         const translatedCombined = segments.map((segment) => segment[0]).join("");
         
-        // Split and trim to avoid whitespace issues, using regex to catch spacing/casing variations from GT
         const translatedParts = translatedCombined
           .split(/={1,4}\s*X{1,4}\s*={1,4}/i)
           .map((s) => s.trim());

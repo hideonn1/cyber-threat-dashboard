@@ -9,8 +9,8 @@
       "destination": "https://www.cisa.gov/sites/default/files/feeds/:path*"
     },
     {
-      "source": "/rss2-json/:path*",
-      "destination": "https://api.rss2json.com/:path*"
+      "source": "/raw-rss/:path*",
+      "destination": "https://feeds.feedburner.com/:path*"
     },
     {
       "source": "/gtx/:path*",

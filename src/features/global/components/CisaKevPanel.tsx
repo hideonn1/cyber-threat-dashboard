@@ -4,7 +4,6 @@ import TranslatedText from "@/components/TranslatedText";
 import { useLanguage } from "@/i18n/useLanguage";
 import { useIntelData } from "@/features/dashboard/useIntelData";
 
-// Stable component definitions — prevents remount on every parent render
 const VirtuosoTable = (props: React.HTMLAttributes<HTMLTableElement>) => (
   <table
     {...props}
