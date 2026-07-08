@@ -1,3 +1,4 @@
+import { useState } from "react";
 import TranslatedText from "@/components/TranslatedText";
 import { useLanguage } from "@/i18n/useLanguage";
 import { useIntelData } from "@/features/dashboard/useIntelData";
@@ -7,8 +8,9 @@ function stripHtml(html: string): string {
 }
 
 export default function GlobalIntelPanel() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { newsArticles, loading, errors } = useIntelData();
+  const [visibleCount, setVisibleCount] = useState(10);
 
   if (loading.news) {
     return (
@@ -46,10 +48,23 @@ export default function GlobalIntelPanel() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {newsArticles.map((item, index) => {
-          const formattedDate = item.pubDate
-            ? item.pubDate.split(" ").slice(0, 2).join(" ")
-            : "—";
+        {newsArticles.slice(0, visibleCount).map((item, index) => {
+          let formattedDate = "—";
+          if (item.pubDate) {
+            const dateObj = new Date(item.pubDate);
+            if (!isNaN(dateObj.getTime())) {
+              formattedDate = new Intl.DateTimeFormat(locale, {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              }).format(dateObj);
+            } else {
+              formattedDate = item.pubDate.split(" ").slice(0, 4).join(" ");
+            }
+          }
+
           const summary = item.description
             ? stripHtml(item.description)
             : t("news.noSummary");
@@ -95,6 +110,17 @@ export default function GlobalIntelPanel() {
           );
         })}
       </div>
+
+      {visibleCount < newsArticles.length && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={() => setVisibleCount((prev) => prev + 10)}
+            className="px-6 py-2 text-sm font-mono font-medium text-cyber-amber border border-cyber-amber/30 bg-cyber-amber/5 rounded-sm hover:bg-cyber-amber/15 hover:border-cyber-amber/50 transition-all uppercase tracking-wider"
+          >
+            {t("news.seeMore")}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

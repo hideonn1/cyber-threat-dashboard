@@ -28,6 +28,8 @@ const es = {
   "threats.tlpLabel": "Nivel TLP",
   "threats.tlpAll": "Todos",
   "threats.noResults": "Sin resultados para los filtros aplicados.",
+  "threats.mockBadge": "ACTUALIZACIÓN DIARIA",
+  "threats.mockBadgeTitle": "Las alertas de la ANCI se actualizan una vez al día.",
   "threats.offline.title": "Modo de Respaldo Local: Servidor ANCI no disponible",
   "threats.offline.description":
     "La estación de trabajo no pudo conectar con el endpoint '/api/v1/alerts/'. Verifique su configuración de red o la IP del proxy en 'vite.config.ts'.",
@@ -69,6 +71,7 @@ const es = {
   "news.feedExtended": "Panel extendido de despachos internacionales de ciberseguridad",
   "news.dispatches": "despachos",
   "news.readSource": "Leer fuente internacional",
+  "news.seeMore": "Ver más",
 
   "footer.platform": "Plataforma",
   "footer.platformDesc":
@@ -109,6 +112,8 @@ const en: Record<keyof typeof es, string> = {
   "threats.tlpLabel": "TLP level",
   "threats.tlpAll": "All",
   "threats.noResults": "No results for the applied filters.",
+  "threats.mockBadge": "DAILY UPDATE",
+  "threats.mockBadgeTitle": "ANCI alerts are updated once a day.",
   "threats.offline.title": "Local Fallback Mode: ANCI server unavailable",
   "threats.offline.description":
     "The workstation could not connect to the '/api/v1/alerts/' endpoint. Check your network configuration or the proxy target URL in 'vite.config.ts'.",
@@ -150,6 +155,7 @@ const en: Record<keyof typeof es, string> = {
   "news.feedExtended": "Extended panel of international cybersecurity briefings",
   "news.dispatches": "briefings",
   "news.readSource": "Read international source",
+  "news.seeMore": "See more",
 
   "footer.platform": "Platform",
   "footer.platformDesc":
