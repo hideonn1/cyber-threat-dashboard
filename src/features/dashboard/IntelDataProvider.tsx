@@ -175,7 +175,7 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
     };
     fetchAnci();
     return () => controller.abort();
-  }, []);
+  }, [t]);
 
   const fetchMoreAnci = useCallback(async () => {
     if (isFetchingMoreAnci || !hasMoreAnci) return;

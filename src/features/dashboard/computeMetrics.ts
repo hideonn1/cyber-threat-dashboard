@@ -1,5 +1,5 @@
 import type { AnciAlert } from "@/features/threats/types";
-import type { CisaVulnerability } from "@/features/global/types";
+
 
 function normalizeTlp(tlp: string): string {
   return tlp.replace(/^TLP:/i, "").trim().toUpperCase();
@@ -29,8 +29,7 @@ export function isPhishingOrFraude(alert: AnciAlert): boolean {
 }
 
 export function computeCriticalCount(
-  alerts: AnciAlert[],
-  _cisaVulnerabilities?: CisaVulnerability[],
+  alerts: AnciAlert[]
 ): number {
   return alerts
     .filter((a) => !isOfflineFallback(a))
