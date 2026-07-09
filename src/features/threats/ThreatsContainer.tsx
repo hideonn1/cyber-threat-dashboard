@@ -1,10 +1,12 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLanguage } from "@/i18n/useLanguage";
 import { useIntelData } from "@/features/dashboard/useIntelData";
+import { usePreferences } from "@/features/preferences/usePreferences";
 import AlertCard from "./components/AlertCard";
 
 export default function ThreatsContainer() {
   const { t } = useLanguage();
+  const { preferences } = usePreferences();
   const {
     alerts,
     loading,
@@ -15,8 +17,14 @@ export default function ThreatsContainer() {
     isUsingMockAnci,
   } = useIntelData();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTlp, setSelectedTlp] = useState("ALL");
+  const [selectedTlp, setSelectedTlp] = useState<string>(preferences.defaultTlp);
   const [visibleCount, setVisibleCount] = useState(9);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedTlp(preferences.defaultTlp);
+  }, [preferences.defaultTlp]);
+
 
   const filteredAlerts = useMemo(() => {
     return alerts.filter((alert) => {
