@@ -31,10 +31,10 @@ const CARD_META = [
 
 export default function AnalystMetricsPanel() {
   const { t } = useLanguage();
-  const { alerts, cisaVulnerabilities, syncTimes, loading } = useIntelData();
+  const { alerts, syncTimes, loading } = useIntelData();
 
   const metrics = useMemo(() => {
-    const criticalCount = computeCriticalCount(alerts, cisaVulnerabilities);
+    const criticalCount = computeCriticalCount(alerts);
     const phishingRatio = computePhishingRatio(alerts);
     const lastSync = getLatestSyncTime([
       syncTimes.anci,
@@ -47,7 +47,7 @@ export default function AnalystMetricsPanel() {
       phishingRatio,
       lastSyncFormatted: formatMilitaryTime(lastSync),
     };
-  }, [alerts, cisaVulnerabilities, syncTimes]);
+  }, [alerts, syncTimes]);
 
   const isLoading = loading.anci || loading.cisa || loading.news;
 

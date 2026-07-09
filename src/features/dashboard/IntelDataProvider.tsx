@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useLanguage } from "@/i18n/useLanguage";
+import type { MessageKey } from "@/i18n/messages";
 import { fetchJson } from "@/lib/fetchJson";
 import type { AnciAlert, AnciApiResponse } from "@/features/threats/types";
 import type { CisaApiResponse } from "@/features/global/types";
@@ -12,21 +14,19 @@ const ANCI_ALERTS_URL = "/api/v1/alerts/";
 const CISA_KEV_URL =
   "/global-threats/known_exploited_vulnerabilities.json";
 
-function createOfflineAlert(): AnciAlert {
+function createOfflineAlert(t: (key: MessageKey) => string): AnciAlert {
   return {
     code: "ANCI-OFFLINE-001",
-    title: "Modo de Respaldo Local: Servidor ANCI no disponible",
+    title: t("threats.offline.title"),
     category: "Sistema",
     tags: ["Offline", "Local"],
     alert_class: "Advertencia",
     incident_type: "Fallo de enlace",
     tlp: "AMBER",
-    general_description:
-      "La estación de trabajo no pudo conectar con el endpoint '/api/v1/alerts/'. Verifique su configuración de red o la IP del proxy en 'vite.config.ts'.",
+    general_description: t("threats.offline.description"),
     specific_description: "Error de conexión.",
     date: new Date().toISOString(),
-    mitigation:
-      "Asegúrese de estar conectado a la red interna del laboratorio o que la URL target del proxy sea correcta.",
+    mitigation: t("threats.offline.mitigation"),
     vulnerabilities: [],
     iocs: [],
   };
@@ -104,6 +104,7 @@ function mapAnciItems(items: AnciAlert[]): AnciAlert[] {
 }
 
 export function IntelDataProvider({ children }: { children: ReactNode }) {
+  const { t } = useLanguage();
   const [alerts, setAlerts] = useState<AnciAlert[]>([]);
   const [cisaVulnerabilities, setCisaVulnerabilities] = useState<
     IntelDataContextValue["cisaVulnerabilities"]
@@ -132,6 +133,7 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
   const [isFetchingMoreAnci, setIsFetchingMoreAnci] = useState(false);
   const [isUsingMockAnci, setIsUsingMockAnci] = useState(false);
   const anciPageRef = useRef(1);
+  const alertsCountRef = useRef(0);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -158,7 +160,7 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
           setErrors((prev) => ({ ...prev, anci: null }));
         } catch (mockError) {
           console.warn("Mock data also failed to load", mockError);
-          setAlerts([createOfflineAlert()]);
+          setAlerts([createOfflineAlert(t)]);
           setHasMoreAnci(false);
           setErrors((prev) => ({
             ...prev,
@@ -173,7 +175,7 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
     };
     fetchAnci();
     return () => controller.abort();
-  }, []);
+  }, [t]);
 
   const fetchMoreAnci = useCallback(async () => {
     if (isFetchingMoreAnci || !hasMoreAnci) return;
@@ -186,16 +188,18 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
       setAlerts((prev) => {
         const existingCodes = new Set(prev.map(a => a.code));
         const deduped = mappedItems.filter(a => !existingCodes.has(a.code));
-        return [...prev, ...deduped];
+        const newAlerts = [...prev, ...deduped];
+        alertsCountRef.current = newAlerts.length;
+        return newAlerts;
       });
-      setHasMoreAnci(data.count > (alerts.length + mappedItems.length));
+      setHasMoreAnci(data.count > (alertsCountRef.current + mappedItems.length));
       anciPageRef.current = nextPage;
     } catch (error) {
       console.warn("Failed to fetch more ANCI alerts", error);
     } finally {
       setIsFetchingMoreAnci(false);
     }
-  }, [isFetchingMoreAnci, hasMoreAnci, alerts.length]);
+  }, [isFetchingMoreAnci, hasMoreAnci]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -237,6 +241,11 @@ export function IntelDataProvider({ children }: { children: ReactNode }) {
         const text = await response.text();
         const parser = new DOMParser();
         const xml = parser.parseFromString(text, "text/xml");
+
+        if (xml.querySelector("parsererror")) {
+          throw new Error("Invalid RSS XML received from feed");
+        }
+
         const items = Array.from(xml.querySelectorAll("item"));
         
         const parsedItems = items.map(item => ({
