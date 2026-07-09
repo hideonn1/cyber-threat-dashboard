@@ -1,5 +1,6 @@
-import { useState, startTransition } from "react";
+import { useState, startTransition, useEffect } from "react";
 import { useLanguage } from "@/i18n/useLanguage";
+import { usePreferences } from "@/features/preferences/usePreferences";
 import { IntelDataProvider } from "./IntelDataProvider";
 import AnalystMetricsPanel from "./AnalystMetricsPanel";
 import ThreatsContainer from "@/features/threats/ThreatsContainer";
@@ -10,13 +11,20 @@ import type { TacticalTab } from "./types";
 
 function TacticalConsoleContent() {
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<TacticalTab>("cl_alerts");
+  const { preferences } = usePreferences();
+  const [activeTab, setActiveTab] = useState<TacticalTab>(preferences.defaultTab);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setActiveTab(preferences.defaultTab);
+  }, [preferences.defaultTab]);
 
   const handleTabChange = (tab: TacticalTab) => {
     startTransition(() => {
       setActiveTab(tab);
     });
   };
+
 
   return (
     <div className="space-y-6">
